@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Library Management</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+  }
+
+  form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  input[type="text"], input[type="number"] {
+    padding: 10px;
+    flex: 1;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  button {
+    padding: 10px 20px;
+    background-color: #5c9ded;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #3a78c2;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .delete-btn {
+    background-color: #e74c3c;
+    color: #fff;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .delete-btn:hover {
+    background-color: #c0392b;
+  }
+</style>
+</head>
+<body>
+
+<h1>Library Management System</h1>
+<div class="container">
+  <form id="bookForm">
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="author" placeholder="Author" required />
+    <input type="number" id="year" placeholder="Year" required />
+    <button type="submit">Add Book</button>
+  </form>
+
+  <table id="booksTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Year</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Book entries will appear here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Load books from local storage or initialize empty array
+  let books = JSON.parse(localStorage.getItem('books')) || [];
+
+  const booksTableBody = document.querySelector('#booksTable tbody');
+
+  // Function to render books in table
+  function renderBooks() {
+    booksTableBody.innerHTML = '';
+    books.forEach((book, index) => {
+      const row = document.createElement('tr');
+
+      row.innerHTML = `
+        <td>${book.title}</td>
+        <td>${book.author}</td>
+        <td>${book.year}</td>
+        <td><button class="delete-btn" data-index="${index}">Delete</button></td>
+      `;
+
+      booksTableBody.appendChild(row);
+    });
+  }
+
+  // Save books to local storage
+  function saveBooks() {
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+
+  // Handle form submission to add new book
+  document.getElementById('bookForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const title = document.getElementById('title').value.trim();
+    const author = document.getElementById('author').value.trim();
+    const year = document.getElementById('year').value.trim();
+
+    if (title && author && year) {
+      books.push({ title, author, year });
+      saveBooks();
+      renderBooks();
+      this.reset();
+    }
+  });
+
+  // Handle delete button clicks
+  booksTableBody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('delete-btn')) {
+      const index = e.target.getAttribute('data-index');
+      books.splice(index, 1);
+      saveBooks();
+      renderBooks();
+    }
+  });
+
+  // Initial render
+  renderBooks();
+</script>
+
+</body>
+</html>
